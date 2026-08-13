@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from dashboard.polymarket_api import fetch_all_closed_since, settlement_from_closed
@@ -19,6 +20,7 @@ SESSION_PATH = ROOT / "data" / "session_state.json"
 
 app = FastAPI(title="Polymarket Copy Lab")
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 
 
 def load_monitor() -> dict:

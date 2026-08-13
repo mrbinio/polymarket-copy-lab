@@ -2,71 +2,123 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Session settlements</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Copy Lab" />
+  <meta name="theme-color" content="#0f1115" />
+  <link rel="manifest" href="/static/manifest.json" />
+  <link rel="apple-touch-icon" href="/static/icon-180.png" />
+  <title>Copy Lab</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; background: #0f1115; color: #e8eaed; margin: 0; padding: 16px; }
-    h1 { font-size: 1.1rem; margin: 0 0 8px; }
-    .summary { color: #9aa0a6; margin-bottom: 16px; font-size: 0.95rem; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      background: #0f1115; color: #e8eaed; margin: 0;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(15, 17, 21, 0.92); backdrop-filter: blur(12px);
+      padding: 14px 16px 10px; border-bottom: 1px solid #23272f;
+    }
+    h1 { font-size: 1.15rem; margin: 0 0 4px; font-weight: 700; }
+    .summary { color: #9aa0a6; font-size: 0.9rem; }
     .positive { color: #3dd68c; }
     .negative { color: #f87171; }
-    .controls { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
-    button { background: #1a73e8; color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
-    button.secondary { background: #3c4043; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #2a2f36; }
-    th { color: #9aa0a6; font-weight: 600; }
-    tr.win { background: rgba(61, 214, 140, 0.08); }
-    tr.loss { background: rgba(248, 113, 113, 0.08); }
-    .warn { background: #3c2f00; color: #fdd663; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    .controls { display: flex; gap: 8px; padding: 12px 16px; }
+    button {
+      flex: 1; background: #1a73e8; color: #fff; border: 0;
+      padding: 12px 0; border-radius: 12px; cursor: pointer;
+      font-size: 0.95rem; font-weight: 600;
+    }
+    button.secondary { background: #2a2f38; }
+    button:active { opacity: 0.7; }
+    .list { padding: 0 12px 24px; }
+    .card {
+      display: flex; align-items: center; gap: 12px;
+      background: #171a20; border-radius: 14px; padding: 12px 14px;
+      margin-bottom: 8px; border-left: 4px solid transparent;
+    }
+    .card.win { border-left-color: #3dd68c; }
+    .card.loss { border-left-color: #f87171; }
+    .card .meta { flex: 1; min-width: 0; }
+    .card .market {
+      font-size: 0.9rem; font-weight: 600; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .card .sub { font-size: 0.78rem; color: #9aa0a6; margin-top: 2px; }
+    .card .pnl { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+    .badge {
+      display: inline-block; background: #22262e; border-radius: 20px;
+      padding: 2px 10px; font-size: 0.72rem; color: #c7cbd1;
+    }
+    .warn {
+      background: #3c2f00; color: #fdd663; padding: 12px;
+      border-radius: 12px; margin: 12px 16px; font-size: 0.85rem;
+    }
+    .empty { text-align: center; color: #5f6368; padding: 48px 16px; font-size: 0.9rem; }
   </style>
 </head>
 <body>
-  <h1>Session settlements</h1>
+  <header>
+    <h1>Session settlements</h1>
+    <div class="summary" id="summary">Ładowanie…</div>
+  </header>
   <div id="warn" class="warn" style="display:none"></div>
-  <div class="summary" id="summary">Loading…</div>
   <div class="controls">
     <button id="startBtn">Start eval</button>
-    <button id="stopBtn" class="secondary">Stop eval</button>
+    <button id="stopBtn" class="secondary">Stop</button>
     <button id="refreshBtn" class="secondary">Refresh</button>
   </div>
-  <table>
-    <thead>
-      <tr><th>TIME</th><th>OUTCOME</th><th>PNL</th><th>MARKET</th></tr>
-    </thead>
-    <tbody id="rows"></tbody>
-  </table>
+  <div class="list" id="rows"><div class="empty">Brak rozliczeń w tym oknie</div></div>
   <script>
     async function load() {
-      const res = await fetch('/api/status');
-      const data = await res.json();
+      let data;
+      try {
+        const res = await fetch('/api/status');
+        data = await res.json();
+      } catch (e) {
+        document.getElementById('summary').textContent = 'Brak połączenia z serwerem';
+        return;
+      }
       const warn = document.getElementById('warn');
       if (!data.wallet_configured) {
         warn.style.display = 'block';
-        warn.textContent = 'Ustaw configs/monitor.json — poly_wallet (adres PolyCop / Polymarket).';
+        warn.textContent = 'Ustaw configs/monitor.json — poly_wallet.';
+      } else if (data.error) {
+        warn.style.display = 'block';
+        warn.textContent = 'API error: ' + data.error;
       } else {
         warn.style.display = 'none';
       }
-      if (data.error) {
-        warn.style.display = 'block';
-        warn.textContent = 'API error: ' + data.error;
-      }
-      const netClass = data.in_window_net >= 0 ? 'positive' : 'negative';
-      const netSign = data.in_window_net >= 0 ? '+' : '';
+      const net = data.in_window_net || 0;
+      const netClass = net >= 0 ? 'positive' : 'negative';
+      const netSign = net >= 0 ? '+' : '';
       document.getElementById('summary').innerHTML =
-        `<span>${data.resolved_count} resolved this eval</span> · ` +
-        `<span class="${netClass}">in-window net ${netSign}$${data.in_window_net.toFixed(2)}</span>` +
+        `${data.resolved_count} resolved this eval · ` +
+        `<span class="${netClass}">in-window net ${netSign}$${net.toFixed(2)}</span>` +
         (data.session_active ? '' : ' · <span class="negative">eval stopped</span>');
 
-      const tbody = document.getElementById('rows');
-      tbody.innerHTML = '';
-      for (const s of (data.settlements || [])) {
-        const tr = document.createElement('tr');
-        tr.className = s.pnl >= 0 ? 'win' : 'loss';
+      const list = document.getElementById('rows');
+      list.innerHTML = '';
+      const settlements = data.settlements || [];
+      if (!settlements.length) {
+        list.innerHTML = '<div class="empty">Brak rozliczeń w tym oknie</div>';
+        return;
+      }
+      for (const s of settlements) {
+        const card = document.createElement('div');
+        card.className = 'card ' + (s.pnl >= 0 ? 'win' : 'loss');
         const sign = s.pnl >= 0 ? '+' : '';
-        tr.innerHTML = `<td>${s.time_local || s.time || ''}</td><td>${s.outcome}</td><td class="${s.pnl >= 0 ? 'positive' : 'negative'}">${sign}$${s.pnl.toFixed(2)}</td><td>${s.market}</td>`;
-        tbody.appendChild(tr);
+        card.innerHTML =
+          `<div class="meta">` +
+          `<div class="market">${s.market}</div>` +
+          `<div class="sub"><span class="badge">${s.outcome}</span> · ${s.time_local || ''}</div>` +
+          `</div>` +
+          `<div class="pnl ${s.pnl >= 0 ? 'positive' : 'negative'}">${sign}$${s.pnl.toFixed(2)}</div>`;
+        list.appendChild(card);
       }
     }
     document.getElementById('refreshBtn').onclick = load;
