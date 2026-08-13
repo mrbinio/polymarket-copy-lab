@@ -1,0 +1,10 @@
+{
+  "poly_wallet": "0xYOUR_POLYMARKET_TRADING_WALLET",
+  "polycop_deposit_wallet": "0xOPTIONAL_POLYCOP_DEPOSIT_ADDRESS",
+  "cash_balance_usd": 70.0,
+  "active_config": "v1.0.0",
+  "balance_auto_sync": false,
+  "poll_interval_seconds": 45,
+  "eval_window_hours": 48,
+  "display_timezone": "Europe/Warsaw"
+}

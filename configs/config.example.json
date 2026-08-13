@@ -1,0 +1,11 @@
+{
+  "version": "v1.0.0",
+  "target_wallets": [],
+  "copy_settings": {
+    "fixed_amount_usd": 5,
+    "ignore_below_usd": 20,
+    "min_price": 0.15,
+    "max_price": 0.85
+  },
+  "notes": "Add your own target wallet addresses. Never commit real configs."
+}

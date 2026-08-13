@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Session settlements</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #0f1115; color: #e8eaed; margin: 0; padding: 16px; }
+    h1 { font-size: 1.1rem; margin: 0 0 8px; }
+    .summary { color: #9aa0a6; margin-bottom: 16px; font-size: 0.95rem; }
+    .positive { color: #3dd68c; }
+    .negative { color: #f87171; }
+    .controls { margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    button { background: #1a73e8; color: #fff; border: 0; padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+    button.secondary { background: #3c4043; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid #2a2f36; }
+    th { color: #9aa0a6; font-weight: 600; }
+    tr.win { background: rgba(61, 214, 140, 0.08); }
+    tr.loss { background: rgba(248, 113, 113, 0.08); }
+    .warn { background: #3c2f00; color: #fdd663; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Session settlements</h1>
+  <div id="warn" class="warn" style="display:none"></div>
+  <div class="summary" id="summary">Loading…</div>
+  <div class="controls">
+    <button id="startBtn">Start eval</button>
+    <button id="stopBtn" class="secondary">Stop eval</button>
+    <button id="refreshBtn" class="secondary">Refresh</button>
+  </div>
+  <table>
+    <thead>
+      <tr><th>TIME</th><th>OUTCOME</th><th>PNL</th><th>MARKET</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <script>
+    async function load() {
+      const res = await fetch('/api/status');
+      const data = await res.json();
+      const warn = document.getElementById('warn');
+      if (!data.wallet_configured) {
+        warn.style.display = 'block';
+        warn.textContent = 'Ustaw configs/monitor.json — poly_wallet (adres PolyCop / Polymarket).';
+      } else {
+        warn.style.display = 'none';
+      }
+      if (data.error) {
+        warn.style.display = 'block';
+        warn.textContent = 'API error: ' + data.error;
+      }
+      const netClass = data.in_window_net >= 0 ? 'positive' : 'negative';
+      const netSign = data.in_window_net >= 0 ? '+' : '';
+      document.getElementById('summary').innerHTML =
+        `<span>${data.resolved_count} resolved this eval</span> · ` +
+        `<span class="${netClass}">in-window net ${netSign}$${data.in_window_net.toFixed(2)}</span>` +
+        (data.session_active ? '' : ' · <span class="negative">eval stopped</span>');
+
+      const tbody = document.getElementById('rows');
+      tbody.innerHTML = '';
+      for (const s of (data.settlements || [])) {
+        const tr = document.createElement('tr');
+        tr.className = s.pnl >= 0 ? 'win' : 'loss';
+        const sign = s.pnl >= 0 ? '+' : '';
+        tr.innerHTML = `<td>${s.time_local || s.time || ''}</td><td>${s.outcome}</td><td class="${s.pnl >= 0 ? 'positive' : 'negative'}">${sign}$${s.pnl.toFixed(2)}</td><td>${s.market}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+    document.getElementById('refreshBtn').onclick = load;
+    document.getElementById('startBtn').onclick = async () => { await fetch('/api/eval/start', { method: 'POST' }); load(); };
+    document.getElementById('stopBtn').onclick = async () => { await fetch('/api/eval/stop', { method: 'POST' }); load(); };
+    load();
+    setInterval(load, 45000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+configs/monitor.json
+configs/v*.json
+data/*
+!data/.gitkeep
+.env
+__pycache__/
+.venv/
+*.pyc
