@@ -16,6 +16,17 @@ python run_dashboard.py
 
 Open http://127.0.0.1:8765
 
+## Ops console (research + stance, no trades)
+
+```bash
+python3 scripts/export_ops_snapshot.py
+python3 scripts/serve_ops.py
+```
+
+http://127.0.0.1:8788/ops/
+
+Handoffs (Mitch-style): `docs/HANDOFF-*.md`. Remote host: Cloudflare Pages + Firebase Auth — see `docs/HANDOFF-OPS-COMMAND-CENTER.md`.
+
 ## Flow
 
 1. Fund PolyCop, enable copy trades

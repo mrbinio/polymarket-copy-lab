@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Scout Lab</title>
+  <style>
+    :root {
+      --bg: #060810; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #eef1f6; --muted: #8b93a7; --green: #34d399; --red: #fb7185; --yellow: #fdd663;
+      --accent: #6366f1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg); color: var(--text); margin: 0;
+      padding: env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 20px);
+    }
+    header { padding: 14px 4px 10px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    h1 { font-size: 1.05rem; margin: 0 0 4px; }
+    .sub { font-size: 0.72rem; color: var(--muted); line-height: 1.4; }
+    .bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .chip {
+      font-size: 0.68rem; padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted);
+    }
+    .chip.win { color: var(--green); border-color: rgba(52,211,153,0.35); }
+    .chip.lose { color: var(--red); border-color: rgba(251,113,133,0.35); }
+    button {
+      border: 1px solid var(--border); background: rgba(255,255,255,0.06);
+      color: var(--text); padding: 10px 14px; border-radius: 10px; font-weight: 600; cursor: pointer;
+    }
+    button.primary { background: var(--accent); border: none; }
+    h2 {
+      font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--muted); margin: 18px 0 8px;
+    }
+    .hint { font-size: 0.68rem; color: var(--muted); margin-bottom: 8px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 640px; }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text); }
+    th.sortable .arr { opacity: 0.35; margin-left: 3px; }
+    th.sortable.on .arr { opacity: 1; color: var(--accent); }
+    tr:last-child td { border-bottom: none; }
+    .mono { font-variant-numeric: tabular-nums; }
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+    .badge {
+      display: inline-block; font-size: 0.62rem; font-weight: 700; padding: 3px 7px;
+      border-radius: 6px; text-transform: uppercase;
+    }
+    .badge.wygrywa { background: rgba(52,211,153,0.15); color: var(--green); }
+    .badge.przegrywa { background: rgba(251,113,133,0.15); color: var(--red); }
+    .badge.uwaga { background: rgba(253,214,99,0.12); color: var(--yellow); }
+    .addr { color: var(--muted); font-size: 0.65rem; }
+    .empty { text-align: center; color: var(--muted); padding: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Scout Lab</h1>
+    <div class="sub">Osobny dashboard · port <strong>8767</strong> · kliknij nagłówek kolumny = sortowanie</div>
+    <div class="bar" id="summaryBar"><span class="chip">—</span></div>
+    <div class="bar">
+      <button class="primary" id="scanBtn">Skanuj teraz</button>
+      <button id="refreshBtn">Odśwież</button>
+    </div>
+  </header>
+
+  <h2>Top 8 — największe sim wygrane</h2>
+  <div class="hint">
+    <strong>Ogółem</strong> = symulacja copy v1.0 na całej historii API. 
+    <strong>30d</strong> = ostatnie 30 dni. 
+    <strong>Win%</strong> = jak często wygrywa w symulacji (nie live). 
+    <strong>Wygr./tydz.</strong> = szacunek wygranych sim/tydzień.
+  </div>
+  <div class="table-wrap">
+    <table id="top8Table">
+      <thead>
+        <tr>
+          <th class="sortable" data-table="top8" data-col="username">Nick<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="domain">Domena<span class="arr">↕</span></th>
+          <th class="sortable on" data-table="top8" data-col="sim_pnl">Sim ogółem<span class="arr">↓</span></th>
+          <th class="sortable" data-table="top8" data-col="sim_pnl_30d">Sim 30d<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="win_rate_pct">Win% ogół<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="win_rate_30d_pct">Win% 30d<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="wins_per_week">Wygr./tydz.<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="tpd">Trans/d<span class="arr">↕</span></th>
+          <th class="sortable" data-table="top8" data-col="history_days">Historia d<span class="arr">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="top8Body"><tr><td colspan="9" class="empty">Ładowanie…</td></tr></tbody>
+    </table>
+  </div>
+
+  <h2>Nowe znalezione (max 20)</h2>
+  <div class="hint">Auto-scout co ~60 min · sortuj klikając nagłówki</div>
+  <div class="table-wrap">
+    <table id="discTable">
+      <thead>
+        <tr>
+          <th class="sortable" data-table="disc" data-col="status">Status<span class="arr">↕</span></th>
+          <th class="sortable" data-table="disc" data-col="username">Nick<span class="arr">↕</span></th>
+          <th class="sortable" data-table="disc" data-col="domain">Domena<span class="arr">↕</span></th>
+          <th class="sortable on" data-table="disc" data-col="sim_pnl">Sim PnL<span class="arr">↓</span></th>
+          <th class="sortable" data-table="disc" data-col="wins">W<span class="arr">↕</span></th>
+          <th class="sortable" data-table="disc" data-col="copies">Kopie<span class="arr">↕</span></th>
+          <th class="sortable" data-table="disc" data-col="tpd">Trans/d<span class="arr">↕</span></th>
+          <th class="sortable" data-table="disc" data-col="discovered_at">Znaleziono<span class="arr">↕</span></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="discBody"><tr><td colspan="9" class="empty">Ładowanie…</td></tr></tbody>
+    </table>
+  </div>
+
+  <script>
+    let pollMs = 30000;
+    let rosterData = [];
+    let discData = [];
+    let top8Data = [];
+    const sortState = {
+      top8: { col: 'sim_pnl', dir: -1 },
+      disc: { col: 'sim_pnl', dir: -1 },
+    };
+    const PAGE_KEY = new URLSearchParams(window.location.search).get('key') || '';
+    function api(path) {
+      if (!PAGE_KEY) return path;
+      return path + (path.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(PAGE_KEY);
+    }
+
+    function fmt(v) { return v == null ? '—' : Number(v).toFixed(2); }
+    function signed(v) {
+      const n = Number(v || 0);
+      return (n >= 0 ? '+' : '') + '$' + n.toFixed(2);
+    }
+    function badge(status) {
+      const s = status || 'uwaga';
+      return `<span class="badge ${s}">${s}</span>`;
+    }
+    function shortTs(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleString('pl-PL', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    }
+
+    function sortVal(row, col) {
+      if (col === 'discovered_at' || col === 'updated_at') {
+        return row[col] ? new Date(row[col]).getTime() : 0;
+      }
+      if (col === 'status') {
+        const order = { wygrywa: 2, uwaga: 1, przegrywa: 0 };
+        return order[row.status] ?? 0;
+      }
+      const v = row[col];
+      if (typeof v === 'number') return v;
+      if (typeof v === 'string') return v.toLowerCase();
+      return 0;
+    }
+
+    function sortRows(rows, table) {
+      const { col, dir } = sortState[table];
+      return [...rows].sort((a, b) => {
+        const av = sortVal(a, col);
+        const bv = sortVal(b, col);
+        if (av < bv) return -dir;
+        if (av > bv) return dir;
+        return 0;
+      });
+    }
+
+    function updateSortHeaders(table) {
+      document.querySelectorAll(`th.sortable[data-table="${table}"]`).forEach(th => {
+        const on = th.dataset.col === sortState[table].col;
+        th.classList.toggle('on', on);
+        th.querySelector('.arr').textContent = on ? (sortState[table].dir > 0 ? '↑' : '↓') : '↕';
+      });
+    }
+
+    function renderTop8Row(r) {
+      const pnlCls = (r.sim_pnl || 0) >= 0 ? 'pos' : 'neg';
+      const pnl30Cls = (r.sim_pnl_30d || 0) >= 0 ? 'pos' : 'neg';
+      return `<tr>
+        <td><div>${r.username || '—'}</div><div class="addr">${(r.wallet||'').slice(0,10)}… · ${r.wins||0}/${r.losses||0}</div></td>
+        <td>${r.domain || '—'}</td>
+        <td class="mono ${pnlCls}">${signed(r.sim_pnl)}</td>
+        <td class="mono ${pnl30Cls}">${signed(r.sim_pnl_30d)} <span class="addr">${r.wins_30d||0}/${r.losses_30d||0}</span></td>
+        <td class="mono">${r.win_rate_pct != null ? r.win_rate_pct + '%' : '—'}</td>
+        <td class="mono">${r.win_rate_30d_pct != null ? r.win_rate_30d_pct + '%' : '—'}</td>
+        <td class="mono">${r.wins_per_week != null ? r.wins_per_week : '—'}</td>
+        <td class="mono">${fmt(r.tpd)}</td>
+        <td class="mono">${r.history_days != null ? Math.round(r.history_days) : '—'}</td>
+      </tr>`;
+    }
+
+    function renderRow(r, withAction) {
+      const pnlCls = (r.sim_pnl || 0) >= 0 ? 'pos' : 'neg';
+      const action = withAction
+        ? `<button data-wallet="${r.wallet}" class="promoteBtn">+ roster</button>`
+        : `<button data-wallet="${r.wallet}" class="removeBtn">usuń</button>`;
+      return `<tr>
+        <td>${badge(r.status)}</td>
+        <td><div>${r.username || '—'}</div><div class="addr">${(r.wallet||'').slice(0,10)}…</div></td>
+        <td>${r.domain || '—'}</td>
+        <td class="mono ${pnlCls}">${signed(r.sim_pnl)}</td>
+        <td class="mono">${r.wins || 0}/${r.losses || 0}</td>
+        <td class="mono">${r.copies || 0}</td>
+        <td class="mono">${fmt(r.tpd)}</td>
+        <td class="mono">${withAction ? shortTs(r.discovered_at) : shortTs(r.updated_at)}</td>
+        <td>${action}</td>
+      </tr>`;
+    }
+
+    function renderTables() {
+      const top8 = sortRows(top8Data, 'top8');
+      const disc = sortRows(discData, 'disc');
+      updateSortHeaders('top8');
+      updateSortHeaders('disc');
+      document.getElementById('top8Body').innerHTML = top8.length
+        ? top8.map(renderTop8Row).join('')
+        : '<tr><td colspan="9" class="empty">Brak — kliknij Skanuj teraz</td></tr>';
+      document.getElementById('discBody').innerHTML = disc.length
+        ? disc.map(r => renderRow(r, true)).join('')
+        : '<tr><td colspan="9" class="empty">Brak — kliknij Skanuj teraz</td></tr>';
+      bindRowButtons();
+    }
+
+    function bindRowButtons() {
+      document.querySelectorAll('.promoteBtn').forEach(btn => {
+        btn.onclick = async () => {
+          await fetch(api('/api/roster/promote'), {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ wallet: btn.dataset.wallet })
+          });
+          load();
+        };
+      });
+      document.querySelectorAll('.removeBtn').forEach(btn => {
+        btn.onclick = async () => {
+          await fetch(api('/api/roster/remove'), {
+            method: 'POST', headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ wallet: btn.dataset.wallet })
+          });
+          load();
+        };
+      });
+    }
+
+    async function load() {
+      let data;
+      try {
+        const res = await fetch(api('/api/status'));
+        data = await res.json();
+        if (data.error && String(data.error).includes('unauthorized')) {
+          document.getElementById('top8Body').innerHTML =
+            '<tr><td colspan="9" class="empty">Otwórz: /?key=kopiuj-lab-8321</td></tr>';
+          return;
+        }
+      } catch (e) {
+        document.getElementById('top8Body').innerHTML =
+          '<tr><td colspan="9" class="empty">Brak serwera — run_scout_dashboard.py</td></tr>';
+        return;
+      }
+
+      const s = data.roster_summary || {};
+      document.getElementById('summaryBar').innerHTML = [
+        `<span class="chip">Roster: ${s.count || 0}</span>`,
+        `<span class="chip win">Wygrywa: ${s.wygrywa || 0}</span>`,
+        `<span class="chip lose">Przegrywa: ${s.przegrywa || 0}</span>`,
+        `<span class="chip">Sim: ${signed(s.combined_sim_pnl)}</span>`,
+        `<span class="chip">Nowe: ${data.discovered_count || 0}/20</span>`,
+      ].join('');
+
+      rosterData = data.roster || [];
+      discData = data.discovered || [];
+      top8Data = data.top8 || [];
+      renderTables();
+    }
+
+    document.querySelectorAll('th.sortable').forEach(th => {
+      th.onclick = () => {
+        const table = th.dataset.table;
+        const col = th.dataset.col;
+        if (sortState[table].col === col) {
+          sortState[table].dir *= -1;
+        } else {
+          sortState[table].col = col;
+          sortState[table].dir = col === 'username' || col === 'domain' || col === 'status' ? 1 : -1;
+        }
+        renderTables();
+      };
+    });
+
+    document.getElementById('refreshBtn').onclick = load;
+    document.getElementById('scanBtn').onclick = async () => {
+      document.getElementById('scanBtn').disabled = true;
+      await fetch(api('/api/scout/run'), { method: 'POST' });
+      document.getElementById('scanBtn').disabled = false;
+      load();
+    };
+
+    load();
+    setInterval(load, pollMs);
+  </script>
+</body>
+</html>

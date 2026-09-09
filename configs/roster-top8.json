@@ -1,0 +1,76 @@
+{
+  "version": "roster-top8",
+  "bankroll_usd": 50,
+  "target_wallets": [
+    {
+      "address": "0x6e131d6c61216b4a5ec571db332ad3226e7fa801",
+      "username": "disputequant",
+      "domain": "other",
+      "sim_pnl": 151.35,
+      "sim_pnl_30d": 60.86
+    },
+    {
+      "address": "0x0e604be17c231a33dc01e38a722c7fe3984e3bad",
+      "username": "0xwise",
+      "domain": "sport",
+      "sim_pnl": 32.75,
+      "sim_pnl_30d": 0.0
+    },
+    {
+      "address": "0x84fbaa0a94c4112b871e3ca039d1d2eb5603675e",
+      "username": "invorser",
+      "domain": "esport",
+      "sim_pnl": 26.9,
+      "sim_pnl_30d": 26.9
+    },
+    {
+      "address": "0xa7cc00c563726032007221e827bbf7fdb6d7644e",
+      "username": "PotatoKotato",
+      "domain": "esport",
+      "sim_pnl": 25.33,
+      "sim_pnl_30d": 5.87
+    },
+    {
+      "address": "0x134a63b764ac7b008356e8db1857db94e6b09e42",
+      "username": "Bertapotamous",
+      "domain": "other",
+      "sim_pnl": 24.01,
+      "sim_pnl_30d": 0.0
+    },
+    {
+      "address": "0x5dab5ed9691fab220535891d9c7f5c28eed322e1",
+      "username": "Weaseloftheweek",
+      "domain": "sport",
+      "sim_pnl": 17.48,
+      "sim_pnl_30d": 72.0
+    },
+    {
+      "address": "0x903221b1098263779ae19486028c844e8c338717",
+      "username": "0x903221b1",
+      "domain": "other",
+      "sim_pnl": 16.74,
+      "sim_pnl_30d": 0.0
+    },
+    {
+      "address": "0x92e53057ef2872722a53fe807245bd387e1defee",
+      "username": "GrokEnjoyer",
+      "domain": "other",
+      "sim_pnl": 16.74,
+      "sim_pnl_30d": 0.0
+    }
+  ],
+  "copy_settings": {
+    "mode": "fixed",
+    "fixed_amount_usd": 5.0,
+    "max_per_trade_usd": 5.0,
+    "max_per_yes_no_usd": 5.0,
+    "ignore_below_usd": 20.0,
+    "min_price": 0.15,
+    "max_price": 0.85,
+    "total_spend_limit_usd": 40.0,
+    "copy_buy_sell": true,
+    "auto_redeem": true,
+    "reverse_copy": false
+  },
+  "notes": "Top 8 from Scout Lab sim (2026-08-21). PolyCop: 8× Paused until user Turn On Copy."
+}

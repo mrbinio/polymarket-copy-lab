@@ -2,10 +2,17 @@
   "version": "v1.0.0",
   "target_wallets": [],
   "copy_settings": {
+    "mode": "fixed",
     "fixed_amount_usd": 5,
+    "max_per_trade_usd": 5,
+    "max_per_yes_no_usd": 5,
     "ignore_below_usd": 20,
     "min_price": 0.15,
-    "max_price": 0.85
+    "max_price": 0.85,
+    "total_spend_limit_usd": 40,
+    "copy_buy_sell": true,
+    "auto_redeem": true,
+    "reverse_copy": false
   },
   "notes": "Add your own target wallet addresses. Never commit real configs."
 }

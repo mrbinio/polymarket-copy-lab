@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+    function isOwner() {
+      return signedIn() &&
+        request.auth.token.email in [
+          // Filled after Firebase project exists — keep in sync with ops/firebase-config.js owners.
+          "arszemik@icloud.com"
+        ];
+    }
+    function isViewer() {
+      return signedIn() &&
+        (isOwner() || request.auth.token.email in [
+          // Add Mitch Gmail here when sharing the live console.
+        ]);
+    }
+
+    match /ops/{doc} {
+      allow read: if isViewer();
+      allow write: if isOwner();
+    }
+    match /ops/{doc}/{id} {
+      allow read: if isViewer();
+      allow write: if isOwner();
+    }
+  }
+}

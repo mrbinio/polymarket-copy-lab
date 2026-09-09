@@ -6,104 +6,394 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Copy Lab" />
-  <meta name="theme-color" content="#0f1115" />
+  <meta name="theme-color" content="#07080d" />
   <link rel="manifest" href="/static/manifest.json" />
   <link rel="apple-touch-icon" href="/static/icon-180.png" />
   <title>Copy Lab</title>
   <style>
+    :root {
+      --bg: #07080d;
+      --surface: rgba(255, 255, 255, 0.045);
+      --surface-2: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #f2f4f8;
+      --muted: #8a91a3;
+      --faint: #565d70;
+      --green: #34d399;
+      --green-soft: rgba(52, 211, 153, 0.12);
+      --red: #fb7185;
+      --red-soft: rgba(251, 113, 133, 0.12);
+      --accent-1: #6366f1;
+      --accent-2: #a855f7;
+      --accent-3: #22d3ee;
+      --radius: 20px;
+    }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html { -webkit-text-size-adjust: 100%; }
     body {
-      font-family: -apple-system, system-ui, sans-serif;
-      background: #0f1115; color: #e8eaed; margin: 0;
-      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
+      background:
+        radial-gradient(1100px 500px at 85% -10%, rgba(99, 102, 241, 0.16), transparent 60%),
+        radial-gradient(900px 450px at -10% 5%, rgba(168, 85, 247, 0.10), transparent 55%),
+        radial-gradient(700px 500px at 50% 110%, rgba(34, 211, 238, 0.07), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+      padding: env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 28px);
     }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+    /* ---------- header ---------- */
     header {
-      position: sticky; top: 0; z-index: 10;
-      background: rgba(15, 17, 21, 0.92); backdrop-filter: blur(12px);
-      padding: 14px 16px 10px; border-bottom: 1px solid #23272f;
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(18px) saturate(1.4);
+      -webkit-backdrop-filter: blur(18px) saturate(1.4);
+      background: rgba(7, 8, 13, 0.72);
+      border-bottom: 1px solid var(--border);
+      padding: calc(env(safe-area-inset-top) + 14px) 0 12px;
+      margin-top: calc(env(safe-area-inset-top) * -1);
     }
-    h1 { font-size: 1.15rem; margin: 0 0 4px; font-weight: 700; }
-    .summary { color: #9aa0a6; font-size: 0.9rem; }
-    .positive { color: #3dd68c; }
-    .negative { color: #f87171; }
-    .controls { display: flex; gap: 8px; padding: 12px 16px; }
+    .header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      width: 34px; height: 34px; border-radius: 11px; flex: none;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2) 60%, var(--accent-3));
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 0.95rem; color: #fff;
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
+    }
+    h1 { font-size: 1.05rem; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+    .brand .sub { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.72rem; font-weight: 600;
+      padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--muted); white-space: nowrap;
+    }
+    .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--faint); }
+    .pill.live { color: var(--green); border-color: rgba(52, 211, 153, 0.35); background: var(--green-soft); }
+    .pill.live .dot { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 50% { opacity: 0.4; } }
+
+    /* ---------- hero ---------- */
+    .hero { text-align: center; padding: 26px 0 6px; }
+    .hero .label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .hero .big {
+      font-size: 3.1rem; font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.1; margin: 6px 0 4px;
+      font-variant-numeric: tabular-nums;
+    }
+    .hero .big.pos {
+      background: linear-gradient(120deg, #34d399, #22d3ee);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero .big.neg { color: var(--red); }
+    .hero .sub { font-size: 0.85rem; color: var(--muted); }
+    .hero .sub b { color: var(--text); font-weight: 600; }
+
+    /* ---------- controls ---------- */
+    .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 18px 0 6px; }
     button {
-      flex: 1; background: #1a73e8; color: #fff; border: 0;
-      padding: 12px 0; border-radius: 12px; cursor: pointer;
-      font-size: 0.95rem; font-weight: 600;
+      appearance: none; border: 1px solid var(--border-strong);
+      background: var(--surface-2); color: var(--text);
+      padding: 13px 0; border-radius: 14px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 650; font-family: inherit;
+      transition: transform 0.08s ease, filter 0.15s ease;
     }
-    button.secondary { background: #2a2f38; }
-    button:active { opacity: 0.7; }
-    .list { padding: 0 12px 24px; }
+    button:active { transform: scale(0.96); filter: brightness(1.25); }
+    button.primary {
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+      border: none; color: #fff;
+      box-shadow: 0 6px 22px rgba(99, 102, 241, 0.35);
+    }
+    button.ghost-wide { grid-column: 1 / -1; color: var(--muted); font-weight: 600; }
+
+    .warn {
+      background: rgba(253, 214, 99, 0.08); color: #fdd663;
+      border: 1px solid rgba(253, 214, 99, 0.25);
+      padding: 12px 14px; border-radius: 14px; margin: 12px 0 0; font-size: 0.85rem;
+    }
+
+    /* ---------- stats ---------- */
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 0 4px; }
+    .stat {
+      position: relative; overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px 16px 13px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .stat::before {
+      content: ""; position: absolute; inset: 0 0 auto 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    }
+    .stat .label {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
+    }
+    .stat .value {
+      font-size: 1.45rem; font-weight: 750; letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat .hint { font-size: 0.7rem; color: var(--faint); margin-top: 4px; }
+    .pos { color: var(--green); }
+    .neg { color: var(--red); }
+
+    /* ---------- sections & cards ---------- */
+    .section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+      padding: 22px 2px 10px;
+    }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .section-title .count {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 999px; padding: 2px 9px; font-size: 0.68rem; color: var(--text);
+    }
     .card {
       display: flex; align-items: center; gap: 12px;
-      background: #171a20; border-radius: 14px; padding: 12px 14px;
-      margin-bottom: 8px; border-left: 4px solid transparent;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px 15px;
+      margin-bottom: 8px;
     }
-    .card.win { border-left-color: #3dd68c; }
-    .card.loss { border-left-color: #f87171; }
+    .card .stripe { width: 4px; align-self: stretch; border-radius: 4px; flex: none; }
+    .card.win .stripe { background: linear-gradient(180deg, #34d399, #0ea5e9); }
+    .card.loss .stripe { background: linear-gradient(180deg, #fb7185, #f43f5e); }
     .card .meta { flex: 1; min-width: 0; }
     .card .market {
-      font-size: 0.9rem; font-weight: 600; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
+      font-size: 0.88rem; font-weight: 600; letter-spacing: -0.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .card .sub { font-size: 0.78rem; color: #9aa0a6; margin-top: 2px; }
-    .card .pnl { font-size: 1rem; font-weight: 700; white-space: nowrap; }
+    .card .sub { font-size: 0.75rem; color: var(--muted); margin-top: 3px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .badge {
-      display: inline-block; background: #22262e; border-radius: 20px;
-      padding: 2px 10px; font-size: 0.72rem; color: #c7cbd1;
+      display: inline-block; background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px; padding: 1px 9px; font-size: 0.7rem; color: var(--text);
+      max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .warn {
-      background: #3c2f00; color: #fdd663; padding: 12px;
-      border-radius: 12px; margin: 12px 16px; font-size: 0.85rem;
+    .card .pnl { font-size: 0.98rem; font-weight: 750; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .empty { text-align: center; color: var(--faint); padding: 40px 16px; font-size: 0.88rem; }
+
+    /* ---------- toast ---------- */
+    #toast {
+      position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 26px);
+      transform: translateX(-50%) translateY(8px);
+      background: rgba(28, 31, 42, 0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-strong);
+      color: var(--text); padding: 11px 20px;
+      border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+      opacity: 0; transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none; z-index: 30; max-width: 90vw; text-align: center;
     }
-    .empty { text-align: center; color: #5f6368; padding: 48px 16px; font-size: 0.9rem; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (min-width: 560px) {
+      .stats { grid-template-columns: repeat(3, 1fr); }
+      .hero .big { font-size: 3.6rem; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Session settlements</h1>
-    <div class="summary" id="summary">Ładowanie…</div>
+    <div class="wrap header-row">
+      <div class="brand">
+        <div class="logo">CL</div>
+        <div>
+          <h1>Copy Lab</h1>
+          <div class="sub" id="headSub">Polymarket monitor</div>
+        </div>
+      </div>
+      <span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">Ładowanie…</span></span>
+    </div>
   </header>
-  <div id="warn" class="warn" style="display:none"></div>
-  <div class="controls">
-    <button id="startBtn">Start eval</button>
-    <button id="stopBtn" class="secondary">Stop</button>
-    <button id="refreshBtn" class="secondary">Refresh</button>
+
+  <div class="wrap">
+    <div id="warn" class="warn" style="display:none"></div>
+
+    <div class="hero">
+      <div class="label">Session total</div>
+      <div class="big" id="heroNet">$0.00</div>
+      <div class="sub" id="heroSub">—</div>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn" class="primary">Start eval</button>
+      <button id="stopBtn">Stop</button>
+      <button id="refreshBtn">Refresh</button>
+      <button id="overrideBtn" class="ghost-wide">Override balance (PolyCop)</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="section-title" id="posTitle" style="display:none">Otwarte pozycje <span class="count" id="posCount">0</span></div>
+    <div id="posRows"></div>
+
+    <div class="section-title">Rozliczenia <span class="count" id="settledCount">0</span></div>
+    <div id="rows"><div class="empty">Brak rozliczeń w tym oknie</div></div>
   </div>
-  <div class="list" id="rows"><div class="empty">Brak rozliczeń w tym oknie</div></div>
+
+  <div id="toast"></div>
+
   <script>
+    let toastTimer;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+    function money(v) { return v == null ? '—' : '$' + v.toFixed(2); }
+    function signedHtml(v) {
+      const cls = v >= 0 ? 'pos' : 'neg';
+      const sign = v >= 0 ? '+' : '';
+      return `<span class="${cls}">${sign}$${v.toFixed(2)}</span>`;
+    }
+
+    const PAGE_KEY = new URLSearchParams(window.location.search).get('key') || '';
+    function api(path) {
+      if (!PAGE_KEY) return path;
+      return path + (path.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(PAGE_KEY);
+    }
+
     async function load() {
       let data;
       try {
-        const res = await fetch('/api/status');
+        const res = await fetch(api('/api/status'));
         data = await res.json();
       } catch (e) {
-        document.getElementById('summary').textContent = 'Brak połączenia z serwerem';
+        document.getElementById('statusText').textContent = 'Brak połączenia';
         return;
       }
+
       const warn = document.getElementById('warn');
-      if (!data.wallet_configured) {
+      if (data.error && String(data.error).includes('unauthorized')) {
         warn.style.display = 'block';
-        warn.textContent = 'Ustaw configs/monitor.json — poly_wallet.';
-      } else if (data.error) {
+        warn.textContent = 'Brak dostępu — otwórz adres z ?key=TWÓJ_KLUCZ (jednorazowo).';
+        document.getElementById('statusText').textContent = 'Wymagany klucz';
+        return;
+      }
+      if (data.error) {
         warn.style.display = 'block';
         warn.textContent = 'API error: ' + data.error;
+      } else if (!data.wallet_configured) {
+        warn.style.display = 'block';
+        warn.textContent = 'Ustaw configs/monitor.json — poly_wallet.';
+      } else if (data.stop_breached) {
+        warn.style.display = 'block';
+        warn.textContent = 'STOP −$' + (data.stop_loss_usd || 10) + ' — PolyCop: Stop All Copy.';
       } else {
         warn.style.display = 'none';
       }
-      const net = data.in_window_net || 0;
-      const netClass = net >= 0 ? 'positive' : 'negative';
-      const netSign = net >= 0 ? '+' : '';
-      document.getElementById('summary').innerHTML =
-        `${data.resolved_count} resolved this eval · ` +
-        `<span class="${netClass}">in-window net ${netSign}$${net.toFixed(2)}</span>` +
-        (data.session_active ? '' : ' · <span class="negative">eval stopped</span>');
 
-      const list = document.getElementById('rows');
+      // status pill
+      const pill = document.getElementById('statusPill');
+      const statusText = document.getElementById('statusText');
+      if (data.session_active) {
+        pill.classList.add('live');
+        const started = data.started_at
+          ? new Date(data.started_at * 1000).toLocaleString('pl-PL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })
+          : '';
+        statusText.textContent = 'Eval' + (started ? ' · od ' + started : '');
+      } else {
+        pill.classList.remove('live');
+        statusText.textContent = 'Eval zatrzymany';
+      }
+
+      // hero — backend uses *_usd names; aliases kept for older responses
+      const total = data.session_pnl_usd ?? data.session_total ?? 0;
+      const settled = data.in_window_net ?? data.cashflow_net_usd ?? 0;
+      const openPnl = data.open_pnl_usd ?? data.open_pnl ?? 0;
+      const estTotal = data.account_total_usd ?? data.est_total;
+      const hero = document.getElementById('heroNet');
+      hero.textContent = (total >= 0 ? '+' : '') + '$' + Number(total).toFixed(2);
+      hero.className = 'big ' + (total >= 0 ? 'pos' : 'neg');
+      const baseline = data.eval_baseline_usd;
+      document.getElementById('heroSub').innerHTML =
+        `settled <b>${(settled >= 0 ? '+' : '')}$${Number(settled).toFixed(2)}</b>` +
+        ` · open <b>${(openPnl >= 0 ? '+' : '')}$${Number(openPnl).toFixed(2)}</b>` +
+        (baseline != null ? ` · start <b>${money(baseline)}</b>` : '') +
+        ` · ${data.resolved_count || 0} resolved`;
+      document.getElementById('headSub').textContent =
+        estTotal != null ? 'Konto ~' + money(estTotal) : 'Polymarket monitor';
+
+      renderStats(data);
+      renderPositions(data.open_positions || []);
+      const settlements = (data.settlements || data.closed_positions || data.settled_events || []).map((s) => ({
+        ...s,
+        pnl: s.pnl ?? s.cash_delta ?? s.usdc ?? 0,
+      }));
+      renderSettlements(settlements);
+    }
+
+    function renderStats(data) {
+      const cashHint = data.cash_source === 'override'
+        ? 'z PolyCop (override)'
+        : data.cash_source === 'onchain' ? 'USDC on-chain' : 'kliknij Override balance';
+      const cash = data.available_cash_usd ?? data.available_cash;
+      const posVal = data.positions_value_usd ?? data.positions_value;
+      const est = data.account_total_usd ?? data.est_total;
+      const settled = data.in_window_net ?? data.cashflow_net_usd ?? 0;
+      const openPnl = data.open_pnl_usd ?? data.open_pnl ?? 0;
+      const stats = [
+        { label: 'Available cash', value: money(cash), hint: cashHint },
+        { label: 'In positions', value: money(posVal), hint: (data.open_positions || []).length + ' otwartych' },
+        { label: 'Est. total', value: money(est), hint: 'cash + pozycje' },
+        { label: 'Session settled', value: signedHtml(settled), hint: 'rozliczone w oknie' },
+        { label: 'Session open', value: signedHtml(openPnl), hint: 'PnL otwartych' },
+        { label: 'Resolved', value: String(data.resolved_count || 0), hint: 'rynków w oknie' },
+      ];
+      document.getElementById('stats').innerHTML = stats.map(s =>
+        `<div class="stat"><div class="label">${s.label}</div>` +
+        `<div class="value">${s.value}</div>` +
+        `<div class="hint">${s.hint}</div></div>`
+      ).join('');
+    }
+
+    function renderPositions(positions) {
+      const title = document.getElementById('posTitle');
+      const list = document.getElementById('posRows');
+      document.getElementById('posCount').textContent = positions.length;
+      if (!positions.length) {
+        title.style.display = 'none';
+        list.innerHTML = '';
+        return;
+      }
+      title.style.display = 'flex';
       list.innerHTML = '';
-      const settlements = data.settlements || [];
+      for (const p of positions) {
+        const card = document.createElement('div');
+        card.className = 'card ' + (p.pnl >= 0 ? 'win' : 'loss');
+        const sign = p.pnl >= 0 ? '+' : '';
+        card.innerHTML =
+          `<div class="stripe"></div>` +
+          `<div class="meta">` +
+          `<div class="market">${p.market}</div>` +
+          `<div class="sub"><span class="badge">${p.outcome}</span> in $${p.invested.toFixed(2)} → now $${p.value.toFixed(2)}</div>` +
+          `</div>` +
+          `<div class="pnl ${p.pnl >= 0 ? 'pos' : 'neg'}">${sign}$${p.pnl.toFixed(2)}</div>`;
+        list.appendChild(card);
+      }
+    }
+
+    function renderSettlements(settlements) {
+      const list = document.getElementById('rows');
+      document.getElementById('settledCount').textContent = settlements.length;
+      list.innerHTML = '';
       if (!settlements.length) {
         list.innerHTML = '<div class="empty">Brak rozliczeń w tym oknie</div>';
         return;
@@ -113,17 +403,42 @@
         card.className = 'card ' + (s.pnl >= 0 ? 'win' : 'loss');
         const sign = s.pnl >= 0 ? '+' : '';
         card.innerHTML =
+          `<div class="stripe"></div>` +
           `<div class="meta">` +
           `<div class="market">${s.market}</div>` +
-          `<div class="sub"><span class="badge">${s.outcome}</span> · ${s.time_local || ''}</div>` +
+          `<div class="sub"><span class="badge">${s.outcome}</span> ${s.time_local || ''}</div>` +
           `</div>` +
-          `<div class="pnl ${s.pnl >= 0 ? 'positive' : 'negative'}">${sign}$${s.pnl.toFixed(2)}</div>`;
+          `<div class="pnl ${s.pnl >= 0 ? 'pos' : 'neg'}">${sign}$${s.pnl.toFixed(2)}</div>`;
         list.appendChild(card);
       }
     }
-    document.getElementById('refreshBtn').onclick = load;
-    document.getElementById('startBtn').onclick = async () => { await fetch('/api/eval/start', { method: 'POST' }); load(); };
-    document.getElementById('stopBtn').onclick = async () => { await fetch('/api/eval/stop', { method: 'POST' }); load(); };
+
+    document.getElementById('overrideBtn').onclick = async () => {
+      const raw = prompt('Wklej Polymarket Balance z PolyCop /start (np. 10.7).\nPuste = wyczyść override.');
+      if (raw === null) return;
+      const balance = raw.trim() === '' ? null : parseFloat(raw.replace(',', '.').replace('$', ''));
+      if (balance !== null && isNaN(balance)) { toast('Nieprawidłowa kwota'); return; }
+      await fetch(api('/api/balance/override'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ balance }),
+      });
+      toast(balance === null ? 'Override wyczyszczony' : 'Balance ustawiony: $' + balance.toFixed(2));
+      load();
+    };
+    document.getElementById('refreshBtn').onclick = async () => { await load(); toast('Odświeżono'); };
+    document.getElementById('startBtn').onclick = async () => {
+      const res = await fetch(api('/api/eval/start'), { method: 'POST' });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { toast(d.error || 'Start eval nie przeszedł'); return load(); }
+      toast(d.already_active ? 'Sesja już działa' : 'Sesja wystartowała · start $' + Number(d.eval_baseline_usd || 0).toFixed(2));
+      load();
+    };
+    document.getElementById('stopBtn').onclick = async () => {
+      await fetch(api('/api/eval/stop'), { method: 'POST' });
+      toast('Sesja zatrzymana');
+      load();
+    };
     load();
     setInterval(load, 45000);
   </script>

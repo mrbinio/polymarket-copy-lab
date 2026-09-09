@@ -1,0 +1,54 @@
+{
+  "version": "roster-phase1",
+  "bankroll_usd": 52.66,
+  "eval_started_at": "2026-08-21T13:14:19Z",
+  "target_wallets": [
+    {
+      "address": "0x5dab5ed9691fab220535891d9c7f5c28eed322e1",
+      "username": "Weaseloftheweek",
+      "domain": "sport",
+      "sim_pnl_30d": 72.0,
+      "polycop": "active"
+    },
+    {
+      "address": "0x6e131d6c61216b4a5ec571db332ad3226e7fa801",
+      "username": "disputequant",
+      "domain": "other",
+      "sim_pnl_30d": 62.53,
+      "polycop": "active"
+    },
+    {
+      "address": "0x84fbaa0a94c4112b871e3ca039d1d2eb5603675e",
+      "username": "invorser",
+      "domain": "esport",
+      "sim_pnl_30d": 26.9,
+      "polycop": "active"
+    }
+  ],
+  "paused_wallets": [
+    "PotatoKotato",
+    "0xwise",
+    "Bertapotamous",
+    "0x903221b1",
+    "GrokEnjoyer"
+  ],
+  "copy_settings": {
+    "mode": "fixed",
+    "fixed_amount_usd": 5.0,
+    "max_per_trade_usd": 5.0,
+    "max_per_yes_no_usd": 5.0,
+    "max_per_market_usd": 5.0,
+    "ignore_below_usd": 20.0,
+    "min_price": 0.15,
+    "max_price": 0.85,
+    "total_spend_limit_usd": 40.0,
+    "balance_sl_usd": 42.0,
+    "copy_buy_sell": true,
+    "auto_redeem": true,
+    "reverse_copy": false,
+    "turbo_mode": false,
+    "below_min_buy_at_min": true,
+    "slippage_pct": 30
+  },
+  "notes": "Live 2026-08-21: 3× Active (Weasel + dispute + invorser). Balance SL $42 verified on invorser screen. Must be $42 on all 3. Max Yes/No not in screenshot — confirm $5. Do not Turn On All Copy."
+}

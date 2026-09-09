@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Backtest Lab</title>
+  <style>
+    :root { color-scheme: dark; font-family: -apple-system, system-ui, sans-serif; }
+    body { margin: 0; background: #0f1115; color: #e8eaed; padding: 16px; }
+    h1 { font-size: 1.2rem; margin: 0 0 4px; }
+    .sub { color: #9aa0a6; font-size: 0.85rem; margin-bottom: 16px; }
+    .card { background: #1a1d24; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; }
+    .pos { color: #81c995; }
+    .neg { color: #f28b82; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #2a2f38; }
+    th { color: #9aa0a6; font-weight: 500; }
+    .pill { display: inline-block; background: #2a2f38; border-radius: 999px; padding: 2px 8px; font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>Backtest Lab</h1>
+  <div class="sub" id="summary">Ładowanie…</div>
+  <div class="card" id="roster"></div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Wallet</th><th>Sim PnL</th><th>Copies</th><th>W/L</th><th>Max/out</th><th>tpd</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <script>
+    async function load() {
+      const res = await fetch('/api/results');
+      if (!res.ok) {
+        document.getElementById('summary').textContent = 'Brak wyników — uruchom scripts/run_isolated_trials.py';
+        return;
+      }
+      const { backtest, genome } = await res.json();
+      const s = backtest.settings || {};
+      document.getElementById('summary').textContent =
+        `Fixed $${s.fixed_amount_usd} · max Yes/No $${s.max_per_yes_no_usd} · spend cap $${s.total_spend_limit_usd} · combined sim ${backtest.roster_combined?.combined_sim_pnl >= 0 ? '+' : ''}$${backtest.roster_combined?.combined_sim_pnl ?? 0}`;
+
+      const roster = (genome.target_wallets || []).map(w => w.username || w.address.slice(0,10)).join(', ');
+      document.getElementById('roster').innerHTML = `<strong>Roster (${genome.target_wallets?.length || 0})</strong><br><span class="pill">${roster || '—'}</span>`;
+
+      const tbody = document.getElementById('rows');
+      tbody.innerHTML = '';
+      for (const r of backtest.trials || []) {
+        const tr = document.createElement('tr');
+        const cls = r.sim_pnl >= 0 ? 'pos' : 'neg';
+        tr.innerHTML = `<td>${r.username || r.wallet.slice(0,10)}…</td><td class="${cls}">${r.sim_pnl >= 0 ? '+' : ''}$${r.sim_pnl.toFixed(2)}</td><td>${r.copy_count}</td><td>${r.wins}/${r.losses}</td><td>$${r.max_outcome_exposure}</td><td>${r.trades_per_day}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

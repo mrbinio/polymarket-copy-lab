@@ -1,0 +1,6 @@
+{
+  "dashboard_key": "kopiuj-lab-8321",
+  "refresh_interval_sec": 900,
+  "scan_interval_sec": 3600,
+  "leaderboard_limit": 50
+}
