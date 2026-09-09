@@ -20,6 +20,7 @@ jobs:
       - name: Mark hunt running on the live site
         env:
           PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          PUBLISH_MODE: data
         run: |
           python3 - <<'PY'
           import json
@@ -53,7 +54,8 @@ jobs:
           git add ops/data/hunt.json ops/data/pulse.json
           git diff --cached --quiet || git commit -m "chore: hourly hunt snapshot"
           git push || true
-      - name: Publish ops site to copy-lab-ops Pages
+      - name: Publish hunt JSON to GitHub Pages
         env:
           PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          PUBLISH_MODE: data
         run: bash scripts/publish_ops_pages.sh
