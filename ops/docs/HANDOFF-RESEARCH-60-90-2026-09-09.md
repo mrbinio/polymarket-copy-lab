@@ -16,10 +16,10 @@
 | **Question** | After the Aug stop, who is copyable at **$5 / ignore &lt; $20 / spend $15** on a **60–90 day** track, globally, not the old Top 8? |
 | **Universe** | MONTH + Merlin **706** unique; non-sport sit **503**; ALL-time mid-tier ranks 51–150 **467**. Isolated sims run: **76**. |
 | **Independent veto** | CopyGrade public grades + their Sep 2026 “best to copy” shortlist, then **replayed in our lab**. |
-| **Verdict** | **No wallet clears all gates.** Copy stays **off**. First spoon is **not** Weasel, **not** Antblack-this-week, **not** CopyGrade #1 (PoppyG). |
-| **Next live** | Do **not** Turn On All Copy. If anything is ever enabled later: **1** wallet, spend **$15**, Max Yes/No **$5**, new Balance SL **~$31**. |
+| **Verdict** | Copy stays **off** until you enable it in PolyCop. The **one** wallet to paste if you enable: **Antblack** `0x9c68e5a4b3004bf6ac9d6735a33ffb5f983a247a`. Not Weasel. Not Top 8. Not CopyGrade #1 (PoppyG). |
+| **PolyCop if you enable** | **1** Active, spend **$15**, Max Yes/No **$5**, Balance SL **$31**. Caps in `docs/POLYCOP-PICK.md`. |
 
-**Bottom line:** A positive 30d scout or a MONTH leaderboard name is not a strategy. The copier’s edge after our caps, a 60/90 window, concentration, 5-minute-candle filter, and CopyGrade farming/Avoid is a different question — and right now the answer is empty.
+**Bottom line:** A 30d scout or a MONTH board name is not a strategy. After $5 caps, 60/90d, concentration, candle filter, and CopyGrade, the spoon is **Antblack** (tennis, 76d, +$17 / +$9, conc 0.11, CG 64 not Avoid). Hunt of 994 extra wallets did not beat that profile.
 
 ---
 
@@ -140,24 +140,23 @@ Positive 60/90 sim is luck if one market or one candle family paid it.
 
 ---
 
-## 9. Decision (pending Damian OK — recommended)
+## 9. Decision
 
-| Action | Rationale |
-|--------|-----------|
-| **Keep copy paused** | Empty intersection of gates |
-| **Do not** enable Antblack this week | 76d + farming watch after a −$13 live hit |
-| **Do not** enable 86shin | Thin 60d copier sample; one election theme |
-| Re-run this funnel weekly | Living system, not a one-off list |
-| If ever enable | 1 wallet, spend $15, Max Yes/No $5, Balance SL ~$31, never Turn On All Copy |
+Copy stays **off** until Damian enables it in `@PolyCop_BOT`. If enabled, paste **one** wallet:
+
+**Antblack** `0x9c68e5a4b3004bf6ac9d6735a33ffb5f983a247a` — tennis, 76d, 60d +$17 / 90d +$9, conc 0.11, CopyGrade 64 caution (not Avoid). Caps: 1 Active, $5 / ignore <$20 / spend $15 / Balance SL **$31**. Never Turn On All Copy.
+
+Full click-sheet: `docs/POLYCOP-PICK.md`.
+
+Hunt of 994 extra wallets (2026-09-09) did **not** beat Antblack (Dreamlawn +$4.4; Daemon99 conc 0.60).
 
 Old Balance SL **$42** is stale at ~$39 cash.
 
 ---
 
-## 10. Watch only (not Active)
+## 10. Watch (not Active)
 
 ```
-Antblack   0x9c68e5a4b3004bf6ac9d6735a33ffb5f983a247a   tennis     76d   60d +$17.0 / 90d +$9.2
 86shin     0x1cfc6f041b5b8dad3c14b867be8482a69d45b8e0   politics   220d  60d +$9.3 / 90d +$9.3
 ```
 

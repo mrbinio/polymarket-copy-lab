@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PORT = int(os.environ.get("OPS_PORT", "8788"))
+HOST = os.environ.get("OPS_HOST", "0.0.0.0")
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -19,7 +20,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir(ROOT)
-    with socketserver.TCPServer(("127.0.0.1", PORT), Handler) as httpd:
+    with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
         print(f"Ops console  http://127.0.0.1:{PORT}/ops/", flush=True)
-        print(f"Handoffs     http://127.0.0.1:{PORT}/docs/", flush=True)
+        print(f"LAN          http://0.0.0.0:{PORT}/ops/  (all interfaces)", flush=True)
         httpd.serve_forever()

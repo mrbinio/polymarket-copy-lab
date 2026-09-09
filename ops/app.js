@@ -26,9 +26,10 @@
     document.querySelectorAll("[data-view]").forEach(function (el) {
       el.classList.toggle("hidden", el.getAttribute("data-view") !== p);
     });
-    if (state.snap && (p === "funnel" || p === "research")) {
+    if (p === "funnel" || p === "research" || p === "hunt") {
       if (p === "funnel") renderFunnel(state.snap);
       if (p === "research") renderResearch(state.snap);
+      if (p === "hunt") renderHunt();
     }
   }
 
@@ -248,19 +249,79 @@
     };
   }
 
+  function renderPick(s) {
+    const p = s.solution || {};
+    $("pick-lead").textContent = p.summary || "";
+    $("pick-name").textContent = (p.name || "—") + " · " + (p.domain || "");
+    $("pick-why").textContent = p.why || "";
+    $("pick-addr").textContent = "Adres do wklejenia w PolyCop: " + (p.address || "");
+    const caps = s.caps_if_enabled_later || {};
+    const rows = [
+      ["Wallets Active", "1 (tylko ten). Reszta Paused."],
+      ["Fixed / Max trade / Max Yes-No / Max market", "$" + (caps.fixed_usd || 5)],
+      ["Ignore below", "$" + (caps.ignore_below_usd || 20)],
+      ["Total spend", "$" + (caps.total_spend_usd || 15)],
+      ["Balance SL", "$" + (caps.balance_sl_usd || 31) + " — stary $42 jest zły"],
+      ["Turn On All Copy", "NIE"],
+    ];
+    $("pick-caps").innerHTML = rows.map(function (r) {
+      return "<tr><td>" + r[0] + "</td><td>" + r[1] + "</td></tr>";
+    }).join("");
+  }
+
+  function moneyPlain(n) {
+    if (n == null || Number.isNaN(n)) return "—";
+    return (n < 0 ? "−$" : "+$") + Math.abs(n).toFixed(1);
+  }
+
+  async function renderHunt() {
+    try {
+      const h = await (await fetch("./data/hunt.json?t=" + Date.now())).json();
+      $("hunt-status").textContent = (h.status || "?") + " · checked " + (h.checked || 0) +
+        " · " + (h.updated_at || "");
+      $("hunt-rows").innerHTML = (h.candidates || []).map(function (r) {
+        const cg = r.copygrade || {};
+        return "<tr><td>" + r.score + "</td><td>" + r.username + "</td><td>" + r.cat +
+          "</td><td>" + Math.round(r.history_days) + "</td><td>" + moneyPlain(r.w60) +
+          "</td><td>" + moneyPlain(r.w90) + "</td><td>" + r.conc + "</td><td>" +
+          (cg.label || cg.status || "—") + "</td></tr>";
+      }).join("") || "<tr><td colspan='8'>Jeszcze nic — hunt leci.</td></tr>";
+      $("hunt-log").textContent = (h.log || []).slice(-25).join("\n");
+    } catch (e) {
+      $("hunt-status").textContent = "Hunt jeszcze nie zapisał pliku (startuję).";
+    }
+  }
+
+  async function renderRemote() {
+    try {
+      const r = await (await fetch("./data/remote.json?t=" + Date.now())).json();
+      if (r.url) {
+        $("live-reason").textContent = (state.snap.live && state.snap.live.reason) || "";
+        const extra = document.getElementById("remote-url");
+        if (extra) extra.innerHTML = "Zdalnie: <a href='" + r.url + "/ops/'>" + r.url + "/ops/</a>";
+        const lan = document.getElementById("how-lan");
+        if (lan && r.lan) lan.textContent = r.lan;
+      }
+    } catch (e) { /* no tunnel file yet */ }
+  }
+
   function renderAll() {
     const s = state.snap;
     if (!s) return;
     darkChart();
     renderNow(s);
+    renderPick(s);
     renderVeto(s);
     renderLists(s);
     renderLive(s);
     renderDocs(s);
     renderNotes();
+    renderHunt();
+    renderRemote();
     const p = page();
     if (p === "funnel") renderFunnel(s);
     if (p === "research") renderResearch(s);
+    if (p === "hunt") renderHunt();
   }
 
   async function bootFirebase() {
@@ -298,14 +359,15 @@
     await loadConfig();
     const hasFb = await bootFirebase();
     if (!hasFb) {
-      if (isLocalHost()) {
-        state.role = "local";
-        showApp();
-      } else {
-        showGate("Firebase is not configured yet. Copy firebase-config.example.js → firebase-config.js after the Firebase project exists. See docs/HANDOFF-OPS-COMMAND-CENTER.md.");
-      }
+      // Remote tunnel / LAN must work before Firebase exists.
+      state.role = "local";
+      showApp();
     }
     renderAll();
+    setInterval(function () {
+      renderHunt();
+      renderRemote();
+    }, 15000);
   }
 
   main().catch(function (err) {

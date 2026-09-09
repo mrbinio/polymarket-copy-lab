@@ -23,12 +23,15 @@
       <div>
         <div class="who" id="who"></div>
         <nav>
-          <a href="#now" data-page="now">Now</a>
+          <a href="#now" data-page="now">Teraz</a>
+          <a href="#pick" data-page="pick">Rozwiązanie</a>
+          <a href="#hunt" data-page="hunt">Hunt</a>
           <a href="#research" data-page="research">Research</a>
-          <a href="#funnel" data-page="funnel">Funnel</a>
+          <a href="#funnel" data-page="funnel">Lejek</a>
           <a href="#veto" data-page="veto">CopyGrade</a>
           <a href="#lists" data-page="lists">Ban / watch</a>
           <a href="#live" data-page="live">Live</a>
+          <a href="#how" data-page="how">Jak oglądać</a>
           <a href="#docs" data-page="docs">Handoffs</a>
           <a href="#log" data-page="log">Log</a>
         </nav>
@@ -39,7 +42,7 @@
       <div class="stats">
         <div class="stat"><b id="s-cash">—</b><span>Cash (truth)</span></div>
         <div class="stat bad"><b id="s-live">—</b><span>Last live session</span></div>
-        <div class="stat"><b id="s-enable">0</b><span>Wallets ready to enable</span></div>
+        <div class="stat"><b id="s-enable">1</b><span>Gdy włączysz PolyCop — tylu</span></div>
         <div class="stat"><b id="s-sims">—</b><span>Isolated $5 sims</span></div>
       </div>
       <div class="callout danger">
@@ -52,6 +55,39 @@
         <thead><tr><th>Layer</th><th>Job</th><th>Not</th></tr></thead>
         <tbody id="sys-rows"></tbody>
       </table>
+    </section>
+
+    <section data-view="pick" class="hidden">
+      <h2>Rozwiązanie (gdy włączysz PolyCop ręcznie)</h2>
+      <p class="lead" id="pick-lead"></p>
+      <div class="callout">
+        <h2 id="pick-name">—</h2>
+        <p id="pick-why"></p>
+      </div>
+      <table>
+        <thead><tr><th>W PolyCop ustaw</th><th>Wartość</th></tr></thead>
+        <tbody id="pick-caps"></tbody>
+      </table>
+      <p class="lead" id="pick-addr"></p>
+    </section>
+
+    <section data-view="hunt" class="hidden">
+      <h2>Hunt — kolejne portfele (nie Top 8)</h2>
+      <p class="lead" id="hunt-status">Ładuję…</p>
+      <table>
+        <thead><tr><th>Score</th><th>Name</th><th>Cat</th><th>Days</th><th>60d</th><th>90d</th><th>Conc</th><th>CopyGrade</th></tr></thead>
+        <tbody id="hunt-rows"></tbody>
+      </table>
+      <h3>Log</h3>
+      <pre id="hunt-log" style="white-space:pre-wrap;font-size:12px;color:#8b909c"></pre>
+    </section>
+
+    <section data-view="how" class="hidden">
+      <h2>Zdalnie</h2>
+      <p class="lead">To samo Wi‑Fi <strong>nie</strong> jest zdalnym dostępem. Tunel na Macu pada, gdy Mac śpi.</p>
+      <p class="lead">Miejsce dla Mitcha: prywatne repo GitHub <code>mrbinio/polymarket-copy-lab</code> → folder <code>docs/</code> (POLYCOP-PICK + handoffy). Collaborator = read z dowolnej sieci.</p>
+      <p class="lead">Stała strona ops (wykresy, Mac wyłączony): Cloudflare Pages, root <code>ops/</code>, po pushu.</p>
+      <p class="caption">Pełny tekst: docs/JAK-ZDALNIE.md i docs/POLYCOP-PICK.md</p>
     </section>
 
     <section data-view="research" class="hidden">
@@ -117,6 +153,7 @@
         <h2>Copy is paused</h2>
         <p id="live-reason"></p>
       </div>
+      <p class="lead" id="remote-url"></p>
       <div class="stats">
         <div class="stat"><b id="live-copy">PAUSED</b><span>PolyCop copy</span></div>
         <div class="stat"><b id="live-sl-old">—</b><span>Old Balance SL (stale)</span></div>

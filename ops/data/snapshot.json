@@ -3,8 +3,8 @@
   "as_of": "2026-09-09",
   "cash_usd": 39.08,
   "last_live_pnl_usd": -13.58,
-  "stance": "research_only_do_not_enable_copy",
-  "verdict": "No wallet currently clears 60d+90d lab sim AND diversification AND CopyGrade veto AND non-candle AND \u226590d. First spoon is not Antblack, not Weasel, not CopyGrade #1.",
+  "stance": "solution_antblack_when_you_enable_polycop",
+  "verdict": "Gdy w\u0142\u0105czysz PolyCop r\u0119cznie: 1 wallet Antblack (tenis). Hunt leci dalej po kim\u015b z d\u0142u\u017cszym trackiem 90d+. CopyGrade #1 i Top 8 odpadaj\u0105.",
   "system": {
     "discover": [
       "Polymarket Data API category leaderboards MONTH+ALL",
@@ -456,6 +456,16 @@
   ],
   "handoffs": [
     {
+      "title": "PolyCop pick + GitHub share",
+      "date": "2026-09-09",
+      "path": "docs/HANDOFF-GITHUB-POLYCOP-2026-09-09.md"
+    },
+    {
+      "title": "PolyCop — one wallet",
+      "date": "2026-09-09",
+      "path": "docs/POLYCOP-PICK.md"
+    },
+    {
       "title": "Research 60/90d",
       "date": "2026-09-09",
       "path": "docs/HANDOFF-RESEARCH-60-90-2026-09-09.md"
@@ -521,5 +531,19 @@
       "w90": 3.16,
       "copies": 6
     }
-  ]
+  ],
+  "solution": {
+    "name": "Antblack",
+    "address": "0x9c68e5a4b3004bf6ac9d6735a33ffb5f983a247a",
+    "domain": "tennis",
+    "history_days": 76,
+    "w60": 17.0,
+    "w90": 9.2,
+    "copies": 14,
+    "markets": 13,
+    "concentration": 0.11,
+    "copygrade": "64 caution, farming watch, real edge +23%",
+    "summary": "Jedyny z przebadanych, kt\u00f3ry ma 60d i 90d na plusie, 13 rynk\u00f3w (nie jeden mundial), nie jest esportem, nie jest \u015bwiec\u0105 5m, i CopyGrade nie m\u00f3wi Avoid. 76 dni to kr\u00f3tko \u2014 dlatego hunt leci dalej. To jest \u0142y\u017cka na $39, nie lista o\u015bmiu nazw.",
+    "why": "Weasel 60d=$0. invorser spali\u0142 sesj\u0119. gambamaster lab +$24 ale CopyGrade Avoid \u2212100%. PoppyG to Bitcoin 5m. Antblack: tenis, conc. 0.11, 14 kopii. W PolyCop: tylko on Active. Hunt na zak\u0142adce Hunt szuka 90d+ nast\u0119pcy."
+  }
 }
