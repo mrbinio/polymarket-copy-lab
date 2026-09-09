@@ -1,9 +1,9 @@
 name: hunt-and-publish
 
-# Runs without the Mac. Pushes hunt.json + ops UI to GitHub Pages.
+# Runs without the Mac. Publishes hunt/pulse/snapshot JSON only (not the UI).
 on:
   schedule:
-    - cron: "20 * * * *"
+    - cron: "20,50 * * * *"
   workflow_dispatch:
 
 jobs:
