@@ -1,0 +1,34 @@
+name: hunt-and-publish
+
+# Runs without the Mac. Pushes hunt.json + ops UI to GitHub Pages.
+on:
+  schedule:
+    - cron: "20 * * * *"
+  workflow_dispatch:
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install hunt deps
+        run: pip install "httpx>=0.27.0"
+      - name: Run wallet hunt
+        run: python3 scripts/hunt_next.py
+      - name: Commit hunt snapshot in this repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ops/data/hunt.json
+          git diff --cached --quiet || git commit -m "chore: hourly hunt snapshot"
+          git push || true
+      - name: Publish ops site to copy-lab-ops Pages
+        env:
+          PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+        run: bash scripts/publish_ops_pages.sh
