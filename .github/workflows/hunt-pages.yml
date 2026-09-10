@@ -1,61 +1,40 @@
 name: hunt-and-publish
 
-# Runs without the Mac. Publishes hunt/pulse/snapshot JSON only (not the UI).
+# One long loop so a skipped GitHub cron does not leave the board idle.
+# Watchdog every ~20 min starts a new loop only if none is running
+# (concurrency: one in-flight + one pending). Hunt never enables copy.
 on:
   schedule:
-    - cron: "20,50 * * * *"
+    - cron: "7,27,47 * * * *"
   workflow_dispatch:
+
+concurrency:
+  group: copy-lab-hunt
+  cancel-in-progress: false
 
 jobs:
   hunt:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 350
     permissions:
       contents: write
+    env:
+      PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+      HUNT_LOOP_MINUTES: "330"
+      HUNT_PAUSE_SEC: "600"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Mark hunt running on the live site
-        env:
-          PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
-          PUBLISH_MODE: data
-        run: |
-          python3 - <<'PY'
-          import json
-          from datetime import datetime, timezone
-          from pathlib import Path
-          Path("ops/data/pulse.json").write_text(json.dumps({
-            "hunt": "running",
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-          }, indent=2) + "\n")
-          PY
-          bash scripts/publish_ops_pages.sh
       - name: Install hunt deps
         run: pip install "httpx>=0.27.0"
-      - name: Run wallet hunt
-        run: python3 scripts/hunt_next.py
-      - name: Mark hunt idle
-        run: |
-          python3 - <<'PY'
-          import json
-          from datetime import datetime, timezone
-          from pathlib import Path
-          Path("ops/data/pulse.json").write_text(json.dumps({
-            "hunt": "idle",
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-          }, indent=2) + "\n")
-          PY
-      - name: Commit hunt snapshot in this repo
+      - name: Hunt loop (does not enable copy)
+        run: bash scripts/hunt_loop.sh
+      - name: Commit last hunt snapshot
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ops/data/hunt.json ops/data/pulse.json
-          git diff --cached --quiet || git commit -m "chore: hourly hunt snapshot"
+          git diff --cached --quiet || git commit -m "chore: hunt snapshot"
           git push || true
-      - name: Publish hunt JSON to GitHub Pages
-        env:
-          PAGES_DEPLOY_TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
-          PUBLISH_MODE: data
-        run: bash scripts/publish_ops_pages.sh
