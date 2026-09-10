@@ -1,5 +1,6 @@
 #!/bin/bash
 # Publish to mrbinio/copy-lab-ops (GitHub Pages).
+# PUBLISH_MODE=pulse → only pulse.json (do not overwrite hunt.json).
 # PUBLISH_MODE=data  → only hunt/pulse/snapshot JSON (do not overwrite the UI).
 # PUBLISH_MODE=all   → full ops/ site (default).
 set -euo pipefail
@@ -13,7 +14,10 @@ fi
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/mrbinio/copy-lab-ops.git" "$TMP/site"
-if [ "$MODE" = "data" ]; then
+if [ "$MODE" = "pulse" ]; then
+  mkdir -p "$TMP/site/data"
+  [ -f "$ROOT/ops/data/pulse.json" ] && cp "$ROOT/ops/data/pulse.json" "$TMP/site/data/pulse.json"
+elif [ "$MODE" = "data" ]; then
   mkdir -p "$TMP/site/data"
   cp "$ROOT/ops/data/hunt.json" "$TMP/site/data/hunt.json"
   [ -f "$ROOT/ops/data/pulse.json" ] && cp "$ROOT/ops/data/pulse.json" "$TMP/site/data/pulse.json"
@@ -22,6 +26,7 @@ else
   rsync -a --delete \
     --exclude '.git' \
     --exclude 'remote.json' \
+    --exclude 'firebase-config.js' \
     "$ROOT/ops/" "$TMP/site/"
   touch "$TMP/site/.nojekyll"
 fi

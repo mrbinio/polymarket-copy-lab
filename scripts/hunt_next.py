@@ -157,14 +157,20 @@ def score_row(row: dict) -> float:
 
 
 async def main() -> None:
+    prev = {}
+    if OUT.exists():
+        try:
+            prev = json.loads(OUT.read_text())
+        except Exception:
+            prev = {}
     seen = known_wallets()
     hunt = {
         "status": "running",
         "goal": "Find one specialist a $39 stack can copy at $5 after 60/90d, not Top 8.",
         "checked": 0,
-        "log": [],
-        "candidates": [],
-        "pick": None,
+        "log": ["cycle start"],
+        "candidates": prev.get("candidates") or [],
+        "pick": prev.get("pick"),
     }
     write_hunt(hunt)
 
