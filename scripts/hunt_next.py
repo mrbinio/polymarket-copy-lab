@@ -78,6 +78,22 @@ def hunt_plan() -> tuple[list[str], dict[str, list[int]]]:
     return ordered or cats, extra
 
 
+def skip_usernames() -> set[str]:
+    """Nicks the X filter marked news_spike. Hunt still does not enable copy."""
+    names: set[str] = set()
+    if not SOLUTIONS.exists():
+        return names
+    try:
+        sol = json.loads(SOLUTIONS.read_text())
+    except Exception:
+        return names
+    for n in sol.get("x_skip") or []:
+        s = str(n).strip().lower()
+        if s:
+            names.add(s)
+    return names
+
+
 def addr(row: dict) -> str:
     return str(row.get("proxyWallet") or row.get("user") or row.get("address") or "").lower()
 
@@ -208,9 +224,11 @@ async def main() -> None:
 
     universe: dict[str, dict] = {}
     cats, extra_offsets = hunt_plan()
+    skipped = skip_usernames()
     hunt["log"].append(
         "plan cats=" + ",".join(cats)
         + " extra=" + json.dumps(extra_offsets, separators=(",", ":"))
+        + " x_skip=" + ",".join(sorted(skipped))
     )
     write_hunt(hunt)
     headers = {"Accept": "application/json", "User-Agent": "Mozilla/5.0 copy-lab-hunt"}
@@ -234,6 +252,9 @@ async def main() -> None:
                     for row in rows:
                         w = addr(row)
                         if not w.startswith("0x") or w in seen or w in universe:
+                            continue
+                        uname = str(row.get("userName") or "").strip().lower()
+                        if uname and uname in skipped:
                             continue
                         pnl = float(row.get("pnl") or 0)
                         if pnl > 400_000:
