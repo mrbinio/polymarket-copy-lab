@@ -38,6 +38,44 @@ BANNED = {
 }
 
 CATS = ["POLITICS", "CULTURE", "TECH", "FINANCE", "SPORTS", "ECONOMICS"]
+SOLUTIONS = ROOT / "ops" / "data" / "solutions.json"
+
+
+def hunt_plan() -> tuple[list[str], dict[str, list[int]]]:
+    """Next-cycle focus from Claude/lab solutions.json. Copy stays off."""
+    cats = list(CATS)
+    extra: dict[str, list[int]] = {}
+    if not SOLUTIONS.exists():
+        return cats, extra
+    try:
+        sol = json.loads(SOLUTIONS.read_text())
+    except Exception:
+        return cats, extra
+    ordered: list[str] = []
+    for c in sol.get("next_cats") or []:
+        c = str(c).upper()
+        if c in CATS and c not in ordered:
+            ordered.append(c)
+    for c in CATS:
+        if c not in ordered:
+            ordered.append(c)
+    raw = sol.get("extra_offsets") or {}
+    if isinstance(raw, dict):
+        for cat, offs in raw.items():
+            cat = str(cat).upper()
+            if cat not in CATS or not isinstance(offs, list):
+                continue
+            nums: list[int] = []
+            for x in offs:
+                try:
+                    n = int(x)
+                except (TypeError, ValueError):
+                    continue
+                if 50 <= n <= 400 and n not in nums and n not in (100, 150, 200):
+                    nums.append(n)
+            if nums:
+                extra[cat] = nums[:4]
+    return ordered or cats, extra
 
 
 def addr(row: dict) -> str:
@@ -169,11 +207,22 @@ async def main() -> None:
     write_hunt(hunt)
 
     universe: dict[str, dict] = {}
+    cats, extra_offsets = hunt_plan()
+    hunt["log"].append(
+        "plan cats=" + ",".join(cats)
+        + " extra=" + json.dumps(extra_offsets, separators=(",", ":"))
+    )
+    write_hunt(hunt)
     headers = {"Accept": "application/json", "User-Agent": "Mozilla/5.0 copy-lab-hunt"}
     async with httpx.AsyncClient(headers=headers) as client:
-        for cat in CATS:
+        for cat in cats:
             for period, offsets in (("ALL", (150, 200)), ("MONTH", (100, 150))):
-                for offset in offsets:
+                offs = list(offsets)
+                if period == "ALL" and extra_offsets.get(cat):
+                    for n in extra_offsets[cat]:
+                        if n not in offs:
+                            offs.append(n)
+                for offset in offs:
                     try:
                         rows = await fetch_lb(client, cat, period, offset)
                     except Exception as exc:  # noqa: BLE001

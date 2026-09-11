@@ -34,6 +34,7 @@ publish_data || echo "publish (running) failed"
 while [ "$SECONDS" -lt "$END" ]; do
   echo "hunt cycle start SECONDS=$SECONDS"
   python3 "$ROOT/scripts/hunt_next.py" || echo "hunt cycle failed, will retry"
+  python3 "$ROOT/scripts/claude_solutions.py" || echo "solutions skipped"
   publish_data || echo "publish failed"
   left=$((END - SECONDS))
   if [ "$left" -le 45 ]; then

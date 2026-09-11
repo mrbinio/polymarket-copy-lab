@@ -18,6 +18,7 @@ if [ "$MODE" = "data" ]; then
   cp "$ROOT/ops/data/hunt.json" "$TMP/site/data/hunt.json"
   [ -f "$ROOT/ops/data/pulse.json" ] && cp "$ROOT/ops/data/pulse.json" "$TMP/site/data/pulse.json"
   [ -f "$ROOT/ops/data/snapshot.json" ] && cp "$ROOT/ops/data/snapshot.json" "$TMP/site/data/snapshot.json"
+  [ -f "$ROOT/ops/data/solutions.json" ] && cp "$ROOT/ops/data/solutions.json" "$TMP/site/data/solutions.json"
 else
   rsync -a --delete \
     --exclude '.git' \
