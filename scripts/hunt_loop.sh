@@ -36,6 +36,7 @@ while [ "$SECONDS" -lt "$END" ]; do
   python3 "$ROOT/scripts/hunt_next.py" || echo "hunt cycle failed, will retry"
   python3 "$ROOT/scripts/claude_solutions.py" || echo "solutions skipped"
   python3 "$ROOT/scripts/grok_x_filter.py" || echo "x filter skipped"
+  python3 "$ROOT/scripts/refresh_ops_cash.py" || echo "cash skip"
   publish_data || echo "publish failed"
   left=$((END - SECONDS))
   if [ "$left" -le 45 ]; then
