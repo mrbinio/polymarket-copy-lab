@@ -1,11 +1,10 @@
 name: hunt-and-publish
 
-# One long loop so a skipped GitHub cron does not leave the board idle.
-# Watchdog every ~20 min starts a new loop only if none is running
-# (concurrency: one in-flight + one pending). Hunt never enables copy.
+# One hunt cycle every ~3h. The old 330-min 24/7 loop burned GitHub Actions
+# minutes in about a day. Hunt never enables copy.
 on:
   schedule:
-    - cron: "7,27,47 * * * *"
+    - cron: "17 */3 * * *"
   workflow_dispatch:
 
 concurrency:
@@ -15,7 +14,7 @@ concurrency:
 jobs:
   hunt:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 40
     permissions:
       contents: write
     env:
@@ -23,7 +22,7 @@ jobs:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       POLYCOP_WALLET: ${{ secrets.POLYCOP_WALLET }}
-      HUNT_LOOP_MINUTES: "330"
+      HUNT_LOOP_MINUTES: "18"
       HUNT_PAUSE_SEC: "600"
     steps:
       - uses: actions/checkout@v4

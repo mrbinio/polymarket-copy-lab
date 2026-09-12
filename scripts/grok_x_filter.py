@@ -340,11 +340,21 @@ def apply_filter(
     return out
 
 
+def credits_dead(sol: dict[str, Any]) -> bool:
+    if (os.environ.get("SKIP_X_FILTER") or "").strip() == "1":
+        return True
+    err = str(sol.get("x_error") or "").lower()
+    return "403" in err or "permission-denied" in err or "credits" in err
+
+
 def main() -> int:
     hunt = load_json(HUNT)
     sol = load_json(OUT)
     if not sol:
         print("no solutions.json — run Claude first", file=sys.stderr)
+        return 0
+    if credits_dead(sol):
+        print("x filter skip (no xAI credits)", file=sys.stderr)
         return 0
     names = shortlist(sol, hunt)
     parsed, err, model = call_grok({"shortlist": names})
