@@ -89,10 +89,10 @@
     "Optimus-         FINANCE    d=104 60=+0.0 90=+0.0 conc=1.0 cg=Avoid",
     "MinautorRanger   FINANCE    d=312 60=+0.0 90=+0.0 conc=1.0 cg=None",
     "0xDba78EAeC18Da2 FINANCE    d=122 60=+0.0 90=+0.0 conc=0.27 cg=None",
-    "0x6bAB66c4BB24c9 FINANCE    d=78 60=+2.7 90=-2.3 conc=1.0 cg=None",
+    "0x6bAB66c4BB24c9 FINANCE    d=78 60=+0.0 90=-2.3 conc=1.0 cg=Avoid",
     "0xbandit         FINANCE    d=220 60=+0.0 90=+0.0 conc=0.31 cg=None",
     "TTCM             FINANCE    d=129 60=+0.0 90=+0.0 conc=0.76 cg=None",
-    "Tirdenchi        SPORTS     d=302 60=+0.0 90=+0.0 conc=1.0 cg=None",
+    "Tirdenchi        SPORTS     d=303 60=+0.0 90=+0.0 conc=1.0 cg=None",
     "BroadwaySlasher  SPORTS     d=147 60=+0.0 90=+0.0 conc=0.56 cg=None",
     "warluigi         SPORTS     d=108 60=+0.0 90=+0.0 conc=0.65 cg=None",
     "SportsPsychology SPORTS     d=184 60=+0.0 90=+0.0 conc=0.77 cg=None",
@@ -159,5 +159,5 @@
     },
     "score": -25.3
   },
-  "updated_at": "2026-11-02T01:07:37.157791+00:00"
+  "updated_at": "2026-11-02T11:24:25.969879+00:00"
 }
